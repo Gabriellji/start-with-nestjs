@@ -13,6 +13,7 @@ import {
   UsePipes,
   UseGuards,
   SetMetadata,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
@@ -22,8 +23,11 @@ import { HttpExceptionFilter } from './exeptions/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decoraitors/roles.decorator';
+import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
+import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 @Controller('cats')
 @UseGuards(RolesGuard)
+@UseInterceptors(LoggingInterceptor, TransformInterceptor)
 export class CatsController {
   constructor(private catsService: CatsService) {}
   @Post()
@@ -34,6 +38,16 @@ export class CatsController {
     // throw new ForbiddenException();
     this.catsService.create(createCatDto);
   }
+
+  // @Get()
+  // async findOne(@User() user: UserEntity) {
+  //   console.log(user);
+  // }
+
+  // @Get()
+  // async findOne(@User('firstName') firstName: string) {
+  //   console.log(`Hello ${firstName}`);
+  // }
 
   @Get()
   async findAll(): Promise<Cat[]> {
